@@ -1,6 +1,6 @@
 <#import "parts/common.ftl" as c>
-
+<#include "parts/security.ftl">
 <@c.page>
-<div> Hello, user </div>
-<a href="main">Main page</a>
+    <h5>Hello, <#if name !="unknown"> ${name}<#else> guest</#if></h5>
+    <div>This is simple clone of twitter</div>
 </@c.page>
