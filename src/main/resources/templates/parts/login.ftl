@@ -3,15 +3,61 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label"> User Name : </label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" name="username" placeholder="Username"/>
+                <input type="text" class="form-control ${(usernameError??)?string('is-invalid', '')}"
+                       value="<#if user??>${user.username}</#if>" name="username" placeholder="Username"/>
+                <#if usernameError??>
+                    <div class="invalid-feedback">
+                        ${usernameError}
+                    </div>
+                </#if>
             </div>
         </div>
         <div class="form-group row">
             <label class="col-sm-2 col-form-label"> Password: </label>
             <div class="col-sm-6">
-                <input type="password" class="form-control" name="password" placeholder="Password"/>
+                <input type="password" class="form-control ${(passwordError??)?string('is-invalid', '')}"
+                       name="password" placeholder="Password"/>
+                <#if passwordError??>
+                    <div class="invalid-feedback">
+                        ${passwordError}
+                    </div>
+                </#if>
             </div>
         </div>
+        <#if isRegisterForm>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"> Confirm password: </label>
+            <div class="col-sm-6">
+                <input type="password" class="form-control ${(password2Error??)?string('is-invalid', '')}"
+                       name="password2" placeholder="Confirm password"/>
+                <#if password2Error??>
+                    <div class="invalid-feedback">
+                        ${password2Error}
+                    </div>
+                </#if>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label"> E-mail: </label>
+            <div class="col-sm-6">
+                <input type="email" class="form-control ${(emailError??)?string('is-invalid', '')}"
+                       value="<#if user??>${user.email}</#if>" name="email" placeholder="some@some.com"/>
+                <#if emailError??>
+                    <div class="invalid-feedback">
+                        ${emailError}
+                    </div>
+                </#if>
+            </div>
+        </div>
+            <div class="col-sm-6">
+                <div class="g-recaptcha" data-sitekey="6LffR_sUAAAAAM_-aieF-UMIe5oTfCBzGCuJzjy4"></div>
+                <#if captchaError??>
+                    <div class="alert alert-danger" role="alert">
+                        ${captchaError}
+                    </div>
+                </#if>
+            </div>
+        </#if>
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         <#if !isRegisterForm><a href="/registration">Sing Up</a></#if>
         <button type="submit" class="btn btn-primary"><#if isRegisterForm>Sign up<#else>Sign in</#if></button>
