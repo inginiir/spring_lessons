@@ -1,3 +1,4 @@
+<#include "security.ftl">
 <#macro login path isRegisterForm>
     <form action="${path}" method="post" xmlns="http://www.w3.org/1999/html">
         <div class="form-group row">
@@ -25,30 +26,30 @@
             </div>
         </div>
         <#if isRegisterForm>
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label"> Confirm password: </label>
-            <div class="col-sm-6">
-                <input type="password" class="form-control ${(password2Error??)?string('is-invalid', '')}"
-                       name="password2" placeholder="Confirm password"/>
-                <#if password2Error??>
-                    <div class="invalid-feedback">
-                        ${password2Error}
-                    </div>
-                </#if>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"> Confirm password: </label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control ${(password2Error??)?string('is-invalid', '')}"
+                           name="password2" placeholder="Confirm password"/>
+                    <#if password2Error??>
+                        <div class="invalid-feedback">
+                            ${password2Error}
+                        </div>
+                    </#if>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-2 col-form-label"> E-mail: </label>
-            <div class="col-sm-6">
-                <input type="email" class="form-control ${(emailError??)?string('is-invalid', '')}"
-                       value="<#if user??>${user.email}</#if>" name="email" placeholder="some@some.com"/>
-                <#if emailError??>
-                    <div class="invalid-feedback">
-                        ${emailError}
-                    </div>
-                </#if>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label"> E-mail: </label>
+                <div class="col-sm-6">
+                    <input type="email" class="form-control ${(emailError??)?string('is-invalid', '')}"
+                           value="<#if user??>${user.email}</#if>" name="email" placeholder="some@some.com"/>
+                    <#if emailError??>
+                        <div class="invalid-feedback">
+                            ${emailError}
+                        </div>
+                    </#if>
+                </div>
             </div>
-        </div>
             <div class="col-sm-6">
                 <div class="g-recaptcha" data-sitekey="6LffR_sUAAAAAM_-aieF-UMIe5oTfCBzGCuJzjy4"></div>
                 <#if captchaError??>
@@ -67,6 +68,6 @@
 <#macro logout>
     <form action="/logout" method="post">
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-        <button type="submit" class="btn btn-primary">Sign out</button>
+        <button type="submit" class="btn btn-primary"><#if name !="unknown">Sign out<#else>Log in</#if> </button>
     </form>
 </#macro>

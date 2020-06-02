@@ -1,6 +1,5 @@
 package kalita.projects.spring.config;
 
-import kalita.projects.spring.service.MailSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +28,6 @@ public class MailConfig {
 
     @Value("${mail.debug}")
     private String debug;
-
 
     @Bean
     public JavaMailSender getMailSender() {

@@ -3,7 +3,6 @@ package kalita.projects.spring.controllers;
 import kalita.projects.spring.domain.Role;
 import kalita.projects.spring.domain.User;
 import kalita.projects.spring.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,8 +15,11 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN   ')")
     @GetMapping
@@ -36,9 +38,11 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN   ')")
     @PostMapping
-    public String userSave(@RequestParam("userId") User user,
-                           @RequestParam Map<String, String> form,
-                           @RequestParam String username) {
+    public String userSave(
+            @RequestParam("userId") User user,
+            @RequestParam Map<String, String> form,
+            @RequestParam String username
+    ) {
         userService.saveUser(user, username, form);
         return "redirect:/user";
     }
@@ -58,5 +62,41 @@ public class UserController {
     ) {
         userService.updateProfile(user, password, email);
         return "redirect:/user/profile";
+    }
+
+    @GetMapping("subscribe/{user}")
+    public String subscribe(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable User user
+    ) {
+        userService.subscribe(currentUser, user);
+        return "redirect:/user-messages/" + user.getId();
+    }
+
+    @GetMapping("unsubscribe/{user}")
+    public String unsubscribe(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable User user
+    ) {
+        userService.unsubscribe(currentUser, user);
+        return "redirect:/user-messages/" + user.getId();
+    }
+
+    @GetMapping("{type}/{user}/list")
+    public String subscriberList(
+            Model model,
+            @PathVariable User user,
+            @PathVariable String type
+    ) {
+        model.addAttribute("userChannel", user);
+        model.addAttribute("type", type);
+
+        if ("subscription".equals(type)) {
+            model.addAttribute("users", user.getSubscriptions());
+        } else {
+            model.addAttribute("users", user.getSubscribers());
+        }
+
+        return "subscriptions";
     }
 }

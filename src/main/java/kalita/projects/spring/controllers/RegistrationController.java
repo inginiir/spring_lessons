@@ -3,7 +3,6 @@ package kalita.projects.spring.controllers;
 import kalita.projects.spring.domain.User;
 import kalita.projects.spring.domain.dto.CaptchaResponseDTO;
 import kalita.projects.spring.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,18 +19,21 @@ import java.util.Collections;
 import java.util.Map;
 
 @Controller
-public class RegistrationController  {
+public class RegistrationController {
 
     private static final String CAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s";
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Value("${recaptcha.secret}")
     private String recaptchaSecret;
+
+    public RegistrationController(UserService userService, RestTemplate restTemplate) {
+        this.userService = userService;
+        this.restTemplate = restTemplate;
+    }
 
     @GetMapping("/registration")
     public String registration(Model model) {
@@ -45,11 +47,12 @@ public class RegistrationController  {
             @RequestParam("g-recaptcha-response") String captchaResponse,
             @Valid User user,
             BindingResult bindingResult,
-            Model model) {
+            Model model
+    ) {
         String url = String.format(CAPTCHA_URL, recaptchaSecret, captchaResponse);
         CaptchaResponseDTO response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDTO.class);
 
-        if (!response.isSuccess()) {
+        if (response != null && !response.isSuccess()) {
             model.addAttribute("captchaError", "Please fill the captcha");
         }
         boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirm);
@@ -60,7 +63,7 @@ public class RegistrationController  {
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {
             model.addAttribute("passwordError", "Password are different!");
         }
-        if (isConfirmEmpty || bindingResult.hasErrors() || !response.isSuccess()) {
+        if (isConfirmEmpty || bindingResult.hasErrors() || response != null && !response.isSuccess()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errors);
             return "registration";
